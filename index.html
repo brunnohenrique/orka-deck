@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico Técnico — Grupo ORKA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reset.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css" />
+  <style>
+    :root {
+      /* orka-closer dark mode tokens */
+      --primary: #7c3aed;
+      --primary-light: #a78bfa;
+      --primary-dim: rgba(124, 58, 237, 0.12);
+      --grad: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --caution: #6366f1;
+      --success: #10b981;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --border: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(124, 58, 237, 0.35);
+      --fg: #fafafa;
+      --muted: #a3a3a3;
+
+      /* backwards-compat aliases used across the CSS below */
+      --gold: var(--primary);
+      --gold-light: var(--primary-light);
+      --gold-dim: var(--primary-dim);
+      --red: var(--danger);
+      --orange: var(--warning);
+      --yellow: var(--caution);
+      --green: var(--success);
+    }
+
+    .reveal {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      font-size: 28px;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .reveal .slides section {
+      text-align: left;
+      padding: 0.5em 0.8em;
+      box-sizing: border-box;
+    }
+
+    /* ── Cover ── */
+    .slide-cover {
+      text-align: center;
+    }
+
+    .slide-cover .brand {
+      font-size: 0.7em;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3em;
+    }
+
+    .slide-cover h1 {
+      font-size: 1.9em !important;
+      font-weight: 700;
+      color: #fff;
+      margin: 0.1em 0 0.3em;
+      line-height: 1.15;
+    }
+
+    .slide-cover .subtitle {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 0.75em;
+      margin-top: 0.3em;
+    }
+
+    .slide-cover .divider {
+      width: 50px;
+      height: 3px;
+      background: var(--gold);
+      margin: 0.7em auto;
+    }
+
+    /* ── Section label — gradient orka-closer ── */
+    .section-label {
+      font-size: 0.58em;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.2em;
+      display: inline-block;
+    }
+
+    .reveal h2 {
+      font-size: 1.25em !important;
+      font-weight: 700;
+      color: var(--fg);
+      margin-bottom: 0.4em;
+      margin-top: 0;
+    }
+
+    .reveal h3 {
+      font-size: 0.95em !important;
+      color: var(--primary-light);
+      margin-bottom: 0.3em;
+    }
+
+    /* ── Score bar ── */
+    .score-grid {
+      display: grid;
+      gap: 0.38em;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6em;
+    }
+
+    .score-label {
+      font-size: 0.65em;
+      color: rgba(255, 255, 255, 0.8);
+      width: 105px;
+      flex-shrink: 0;
+    }
+
+    .score-bar-wrap {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .score-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .score-val {
+      font-size: 0.65em;
+      font-weight: 700;
+      width: 32px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .bar-crit {
+      background: var(--red);
+    }
+
+    .bar-low {
+      background: var(--orange);
+    }
+
+    .bar-mid {
+      background: var(--yellow);
+    }
+
+    .bar-ok {
+      background: var(--gold);
+    }
+
+    .bar-good {
+      background: var(--green);
+    }
+
+    /* ── Cards — orka-closer dark style ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45em;
+    }
+
+    .card-grid-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.625rem;
+      padding: 0.5em 0.7em;
+      transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card h4 {
+      font-size: 0.62em;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 0.25em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .card p,
+    .card li {
+      font-size: 0.6em;
+      color: rgba(250, 250, 250, 0.7);
+      margin: 0;
+    }
+
+    .card ul {
+      padding-left: 0.9em;
+      margin: 0;
+    }
+
+    .card li {
+      margin-bottom: 0.18em;
+    }
+
+    /* ── Badge — orka-closer semantic colors ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.55em;
+      font-weight: 600;
+      padding: 0.1em 0.5em;
+      border-radius: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      vertical-align: middle;
+    }
+
+    .badge-crit {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-alto {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-medio {
+      background: rgba(99, 102, 241, 0.12);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .badge-ok {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ── Finding dot ── */
+    .finding {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5em;
+      margin-bottom: 0.35em;
+    }
+
+    .finding-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.3em;
+    }
+
+    .dot-crit {
+      background: var(--red);
+    }
+
+    .dot-alto {
+      background: var(--orange);
+    }
+
+    .dot-medio {
+      background: var(--yellow);
+    }
+
+    .dot-ok {
+      background: var(--green);
+    }
+
+    .finding p {
+      font-size: 0.62em;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .finding strong {
+      color: #fff;
+    }
+
+    /* ── Repo score inline ── */
+    .repo-score {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      margin-bottom: 0.3em;
+    }
+
+    .repo-name {
+      font-size: 0.68em;
+      color: rgba(255, 255, 255, 0.9);
+      font-family: monospace;
+      width: 100px;
+    }
+
+    .repo-note {
+      font-size: 0.68em;
+      font-weight: 700;
+      color: var(--gold);
+      width: 34px;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5em;
+    }
+
+    .timeline-col h4 {
+      font-size: 0.62em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35em;
+      margin-top: 0;
+    }
+
+    .timeline-col.t1 h4 {
+      color: var(--red);
+    }
+
+    .timeline-col.t2 h4 {
+      color: var(--gold);
+    }
+
+    .timeline-col.t3 h4 {
+      color: var(--green);
+    }
+
+    .timeline-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .timeline-col li {
+      font-size: 0.58em;
+      color: rgba(255, 255, 255, 0.75);
+      padding: 0.22em 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      line-height: 1.35;
+    }
+
+    .timeline-col li:last-child {
+      border-bottom: none;
+    }
+
+    /* ── Infra diagram ── */
+    .infra-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.625rem;
+      padding: 0.45em 0.7em;
+      text-align: center;
+    }
+
+    .infra-box .icon {
+      font-size: 1em;
+    }
+
+    .infra-box p {
+      font-size: 0.58em;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0.15em 0 0;
+    }
+
+    .infra-arrow {
+      color: var(--gold);
+      font-size: 1em;
+      text-align: center;
+      align-self: center;
+    }
+
+    .infra-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 0.4em;
+      margin: 0.4em 0;
+    }
+
+    /* ── Group avg highlight ── */
+    .avg-block {
+      background: var(--primary-dim);
+      border: 1px solid var(--border-hover);
+      border-radius: 0.625rem;
+      padding: 0.5em 1em;
+      text-align: center;
+      margin: 0.4em 0;
+    }
+
+    .avg-block .big {
+      font-size: 2.2em;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .avg-block small {
+      font-size: 0.6em;
+      color: var(--muted);
+    }
+
+    /* ── Callout — orka-closer card style ── */
+    .callout {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-left: 3px solid var(--danger);
+      border-radius: 0 0.5rem 0.5rem 0;
+      padding: 0.35em 0.7em;
+      margin-bottom: 0.3em;
+      font-size: 0.6em;
+      color: rgba(250, 250, 250, 0.8);
+      line-height: 1.4;
+    }
+
+    .callout strong {
+      color: var(--danger);
+    }
+
+    .callout-ok {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-left: 3px solid var(--success);
+    }
+
+    .callout-ok strong {
+      color: var(--success);
+    }
+
+    /* ── DS columns ── */
+    .ds-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6em;
+    }
+
+    /* ── Misc ── */
+    .muted {
+      color: var(--muted) !important;
+      font-size: 0.6em;
+    }
+
+    .gold {
+      color: var(--primary);
+    }
+
+    .reveal ul {
+      color: rgba(250, 250, 250, 0.75);
+    }
+
+    .reveal li {
+      font-size: 0.68em;
+      margin-bottom: 0.22em;
+    }
+
+    code {
+      font-family: ui-monospace, 'Geist Mono', monospace;
+      font-size: 0.9em;
+      background: var(--surface-2);
+      padding: 0.05em 0.3em;
+      border-radius: 0.25rem;
+      color: var(--primary-light);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8em;
+      align-items: start;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 1 · Cover
+────────────────────────────────────────── -->
+      <section class="slide-cover" data-background-color="#0a0a0a">
+        <img src="logo-orka.png" alt="ORKA"
+          style="height:52px;width:auto;object-fit:contain;margin-bottom:0.6em;opacity:0.95;" />
+        <h1>Diagnóstico<br>Técnico de Engenharia</h1>
+        <div class="divider"></div>
+        <p class="subtitle">Due diligence para entrada societária &nbsp;·&nbsp; Maio 2026</p>
+        <br>
+        <p class="muted">6 repositórios &nbsp;·&nbsp; 12 dimensões &nbsp;·&nbsp; Escala 1–10</p>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 2 · Metodologia
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Metodologia</div>
+        <h2>Como a análise foi feita</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>O que foi avaliado</h4>
+            <ul>
+              <li>Revisão arquitetural de alto nível</li>
+              <li>Código-fonte, configurações e histórico git</li>
+              <li>Infraestrutura inferida por evidências</li>
+              <li>Riscos de segurança, operação e escalabilidade</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Rubrica: 12 dimensões</h4>
+            <ul>
+              <li>Source Control · Local Dev · Code Quality</li>
+              <li>CI · CD · Infrastructure</li>
+              <li>Config & Secrets · Observability</li>
+              <li>Security · Data · Release & Ops · Compliance</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Escala de maturidade</h4>
+            <ul>
+              <li><span class="gold">1/10</span> — inexistente</li>
+              <li><span class="gold">2–3/10</span> — muito fraco / ad hoc</li>
+              <li><span class="gold">4–5/10</span> — parcial com lacunas relevantes</li>
+              <li><span class="gold">6–7/10</span> — adequado com gaps moderados</li>
+              <li><span class="gold">8–10/10</span> — bom, consistente ou excelente</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Severidade dos achados</h4>
+            <ul>
+              <li><span class="badge badge-crit">Crítico</span> &nbsp;Risco imediato</li>
+              <li><span class="badge badge-alto">Alto</span> &nbsp;Incidente relevante</li>
+              <li><span class="badge badge-medio">Médio</span> &nbsp;Produtividade / qualidade</li>
+              <li><span class="badge badge-ok">Baixo</span> &nbsp;Melhoria incremental</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 3 · Portfólio
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Portfólio</div>
+        <h2>6 produtos analisados</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>ORKA</h4>
+            <p>Mono-repo: backend NestJS + dashboard React. Produto principal da marca. Railway + R2.</p>
+          </div>
+          <div class="card">
+            <h4>orka-home</h4>
+            <p>SaaS multi-tenant para construtoras: gestão de empreendimentos, contratos, parcelas e portal do cliente.
+              NestJS + Next.js 15.</p>
+          </div>
+          <div class="card">
+            <h4>orka-save</h4>
+            <p>SaaS de automação WhatsApp + CRM com IA: engagement engine, campanhas, follow-ups. NestJS + Next.js 16 +
+              BullMQ.</p>
+          </div>
+          <div class="card">
+            <h4>orka-closer</h4>
+            <p>IA para corretores: analisa conversas de WhatsApp, classifica leads e sugere respostas. Next.js 16
+              full-stack + Stripe.</p>
+          </div>
+          <div class="card">
+            <h4>Leads-Orka</h4>
+            <p>Geração de leads via Google Places: busca empresas próximas e desbloqueia contatos com créditos.
+              Express.js + React.</p>
+          </div>
+          <div class="card">
+            <h4>orka-pages</h4>
+            <p>Plataforma de landing pages imobiliárias: multi-tenant, domínio próprio por empreendimento, roteamento
+              por hostname. Next.js 16.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 4 · Radar de Maturidade
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Resultado consolidado</div>
+        <h2>Nota de maturidade por produto</h2>
+
+        <div class="two-col">
+          <div>
+            <div class="score-grid">
+
+              <div class="score-row">
+                <span class="score-label">orka-closer</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-mid" style="width:47%"></div>
+                </div>
+                <span class="score-val gold">4,7</span>
+              </div>
+
+              <div class="score-row">
+                <span class="score-label">orka-pages</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-mid" style="width:45%"></div>
+                </div>
+                <span class="score-val gold">4,5</span>
+              </div>
+
+              <div class="score-row">
+                <span class="score-label">orka-home</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-mid" style="width:43%"></div>
+                </div>
+                <span class="score-val gold">4,3</span>
+              </div>
+
+              <div class="score-row">
+                <span class="score-label">ORKA</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-low" style="width:35%"></div>
+                </div>
+                <span class="score-val gold">3,5</span>
+              </div>
+
+              <div class="score-row">
+                <span class="score-label">orka-save</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-low" style="width:33%"></div>
+                </div>
+                <span class="score-val gold">3,3</span>
+              </div>
+
+              <div class="score-row">
+                <span class="score-label">Leads-Orka</span>
+                <div class="score-bar-wrap">
+                  <div class="score-bar bar-crit" style="width:22%"></div>
+                </div>
+                <span class="score-val" style="color:var(--red)">2,2</span>
+              </div>
+
+            </div>
+
+            <br>
+            <p class="muted">Escala 1–10 · média das 12 dimensões por repo</p>
+          </div>
+
+          <div>
+            <div class="avg-block">
+              <div class="big">3,8</div>
+              <div style="color:rgba(255,255,255,0.6);font-size:0.8em;margin-top:0.3em">Média do grupo</div>
+              <small>/ 10</small>
+            </div>
+            <br>
+            <div class="finding">
+              <div class="finding-dot dot-alto"></div>
+              <p>Nenhum repositório atingiu nível <strong>adequado</strong> (≥ 6,0). O teto atual é 4,7.</p>
+            </div>
+            <div class="finding">
+              <div class="finding-dot dot-crit"></div>
+              <p><strong>5 dos 6</strong> repos têm ao menos 1 achado Crítico ativo.</p>
+            </div>
+            <div class="finding">
+              <div class="finding-dot dot-ok"></div>
+              <p>A base tecnológica — stack moderna, Railway, R2 — é <strong>sólida para evoluir</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 5 · Achados críticos (reframed)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Achados críticos</div>
+        <h2>Lacunas resolvíveis — não débito arquitetural</h2>
+
+        <div class="callout callout-ok" style="margin-bottom:0.5em;">
+          <strong>Contexto:</strong> estes achados são padrão para SaaS que priorizaram validação de mercado e
+          velocidade de entrega. Nenhum exige refactor profundo — todos são resolvíveis em semanas. A boa notícia é que
+          a base arquitetural está sólida; a oportunidade está em processo e governança.
+        </div>
+
+        <div class="callout">
+          <strong>Leads-Orka</strong> — <code>backend/.env</code> com credenciais reais de produção em repo público:
+          Google Places API Key (billable), DATABASE_URL Railway, JWT secret fraco.
+        </div>
+        <div class="callout">
+          <strong>orka-save</strong> — <code>twilio_2FA_recovery_code.txt</code> e <code>qr.png</code> (sessão WhatsApp)
+          versionados em repo público.
+        </div>
+        <div class="callout">
+          <strong>ORKA</strong> — <code>.env</code> do backend rastreado; <code>node_modules/</code> e
+          <code>dist/</code> versionados.
+        </div>
+        <div class="callout">
+          <strong>orka-home</strong> — CORS com fallback <code>origin: true</code>; uploads em disco local incompatíveis
+          com filesystem ephemeral do Railway.
+        </div>
+        <div class="callout">
+          <strong>Leads-Orka</strong> — <code>app.use(cors())</code> sem restrição; <code>node_modules/</code>
+          versionado.
+        </div>
+        <div class="callout">
+          <strong>orka-save</strong> — sem Dockerfile ou configuração de deploy formal observada.
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 6 · Diagnóstico por produto (1)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Diagnóstico por produto</div>
+        <h2>ORKA &amp; orka-home</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>ORKA &nbsp;<span class="badge badge-crit">3,5 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-ok">Forte</span> estrutura modular NestJS, stack moderna</li>
+              <li><span class="badge badge-crit">Crítico</span> <code>.env</code> e artefatos versionados no git</li>
+              <li><span class="badge badge-alto">Alto</span> sem CI/CD, sem observabilidade</li>
+              <li><span class="badge badge-alto">Alto</span> CORS permissivo e sem testes</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>orka-home &nbsp;<span class="badge badge-alto">4,3 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-ok">Forte</span> multi-tenancy robusto, auth JWT, Prisma rico</li>
+              <li><span class="badge badge-ok">Forte</span> secrets não versionados, Dockerfile bem feito</li>
+              <li><span class="badge badge-crit">Crítico</span> CORS <code>origin: true</code> por fallback</li>
+              <li><span class="badge badge-crit">Crítico</span> uploads em disco local (Railway ephemeral)</li>
+              <li><span class="badge badge-alto">Alto</span> sem testes, sem CI, sem observabilidade</li>
+            </ul>
+          </div>
+
+          <!-- lifecycle mini scores ORKA -->
+          <div class="card">
+            <h4>Lifecycle ORKA</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span class="gold">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span
+                style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span style="color:var(--green)">8/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span style="color:var(--red)">2/10</span>
+            </div>
+          </div>
+
+          <!-- lifecycle mini scores orka-home -->
+          <div class="card">
+            <h4>Lifecycle orka-home</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span style="color:var(--green)">8/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span style="color:var(--red)">2/10</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 7 · Diagnóstico por produto (2)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Diagnóstico por produto</div>
+        <h2>orka-save &amp; orka-closer</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>orka-save &nbsp;<span class="badge badge-crit">3,3 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-ok">Forte</span> CORS whitelist robusto, 34 arquivos de teste</li>
+              <li><span class="badge badge-ok">Forte</span> <code>assertProductionEnvironmentSafety</code> no boot</li>
+              <li><span class="badge badge-crit">Crítico</span> código 2FA Twilio real versionado</li>
+              <li><span class="badge badge-crit">Crítico</span> sem Dockerfile</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>orka-closer &nbsp;<span class="badge badge-ok">4,7 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-ok">Forte</span> Nenhuma falha crítica</li>
+              <li><span class="badge badge-ok">Forte</span> PII minimização: fingerprint e IP só como hashes</li>
+              <li><span class="badge badge-ok">Forte</span> billing com enforcement server-side de cotas</li>
+              <li><span class="badge badge-ok">Forte</span> prevenção de open redirect implementada</li>
+              <li><span class="badge badge-alto">Alto</span> sem testes, sem CI; migração no build (risco)</li>
+              <li><span class="badge badge-medio">Médio</span> <code>console.log(userId)</code> no middleware (PII)</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Lifecycle orka-save</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span
+                style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span style="color:var(--red)">2/10</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>Lifecycle orka-closer</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span style="color:var(--green)">8/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span class="gold">4/10</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 8 · Diagnóstico por produto (3)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Diagnóstico por produto</div>
+        <h2>Leads-Orka &amp; orka-pages</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>Leads-Orka &nbsp;<span class="badge badge-crit">2,2 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-crit">Crítico</span> credenciais reais de produção no git (repo público)</li>
+              <li><span class="badge badge-crit">Crítico</span> CORS completamente aberto — qualquer origem</li>
+              <li><span class="badge badge-crit">Crítico</span> <code>node_modules/</code> versionado (supply chain)
+              </li>
+              <li><span class="badge badge-alto">Alto</span> JavaScript puro, sem TypeScript, sem testes</li>
+              <li><span class="badge badge-alto">Alto</span> JWT secret previsível: "leadscan2024..."</li>
+              <li><span class="badge badge-medio">Risco</span> menor maturidade técnica do grupo</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>orka-pages &nbsp;<span class="badge badge-alto">4,5 / 10</span></h4>
+            <ul>
+              <li><span class="badge badge-ok">Forte</span> Nenhuma falha crítica</li>
+              <li><span class="badge badge-ok">Forte</span> validação de lead bem estruturada</li>
+              <li><span class="badge badge-ok">Forte</span> prevenção de open redirect; auth segregada</li>
+              <li><span class="badge badge-ok">Forte</span> roteamento por hostname — escalável</li>
+              <li><span class="badge badge-alto">Alto</span> endpoint público sem rate limiting (spam)</li>
+              <li><span class="badge badge-alto">Alto</span> mapa de domínios hardcoded no código</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Lifecycle Leads-Orka</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span
+                style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span style="color:var(--red)">1/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span style="color:var(--red)">2/10</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>Lifecycle orka-pages</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25em 0.6em;font-size:0.65em;">
+              <span style="color:rgba(255,255,255,0.6)">Source Control</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Local Dev</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Code Quality</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CI</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">CD</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Infra</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Config & Secrets</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Observability</span><span style="color:var(--red)">2/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Security</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Data</span><span class="gold">6/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Release & Ops</span><span class="gold">4/10</span>
+              <span style="color:rgba(255,255,255,0.6)">Compliance</span><span class="gold">4/10</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 9 · Roadmap técnico (3 horizontes)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Roadmap técnico</div>
+        <h2>O que vamos construir — em 3 horizontes</h2>
+
+        <div class="timeline">
+
+          <div class="timeline-col t1">
+            <h4>Curto prazo &nbsp;·&nbsp; 1–3 meses</h4>
+            <ul>
+              <li><strong>Fundação de processo</strong> — Definição de Pronto, critério de aceite e branch protection
+                com revisão obrigatória em todos os repos.</li>
+              <li><strong>CI como portão de qualidade</strong> — todo PR dispara lint, typecheck e testes. Código que
+                quebra não chega a staging.</li>
+              <li><strong>Sistema de backup diário</strong> — snapshots automáticos de Postgres em todos os produtos,
+                com restore drill mensal documentado.</li>
+              <li><strong>Secrets sob controle</strong> — secret manager por ambiente, rotação periódica, zero
+                credencial em git.</li>
+              <li><strong>Correções críticas</strong> — rotacionar credenciais expostas, limpar o
+                histórico git de segredos e <code>node_modules</code>, restringir CORS por whitelist em todos os
+                produtos e migrar uploads do orka-home para R2.</li>
+            </ul>
+          </div>
+
+          <div class="timeline-col t2">
+            <h4>Médio prazo &nbsp;·&nbsp; 3–6 meses</h4>
+            <ul>
+              <li><strong>Cobertura de testes</strong> — meta: <strong style="color:var(--primary-light)">100% no
+                  backend</strong>, <strong style="color:var(--primary-light)">50%
+                  no frontend</strong>.</li>
+              <li><strong>Ambientes isolados</strong> — staging e produção claramente separados para os produtos
+                principais, com promoção por política definida e rollback em um comando.</li>
+              <li><strong>Infra como código</strong> — Railway + R2 documentados e reproduzíveis. A arquitetura deixa de
+                existir só na cabeça das pessoas.</li>
+              <li><strong>Observabilidade real</strong> — error tracking, alertas de latência e uptime monitoring
+                ativos. Incidentes descobertos pelo time, não pelo cliente.</li>
+              <li><strong>Dados protegidos por design</strong> — PII minimizado, acessos auditados.
+                Processo de compliance LGPD.</li>
+            </ul>
+          </div>
+
+          <div class="timeline-col t3">
+            <h4>Longo prazo &nbsp;·&nbsp; 6–12 meses</h4>
+            <ul>
+              <li><strong>Disaster Recovery formalizado</strong> — RTO &lt; 4h e RPO &lt; 1h definidos por produto.
+                Runbook validado em drills trimestrais — não exercício de papel.</li>
+              <li><strong>Redundância em pontos críticos</strong> — failover automático para banco e cache nos produtos
+                com receita; backups em região distinta da primária.</li>
+              <li><strong>SLOs</strong> — disponibilidade e latência monitoradas com metas explícitas.</li>
+              <li><strong>Segurança</strong> — OWASP (referência das vulnerabilidades), rate
+                limiting e Firewall.</li>
+              <li><strong>Pronto para escala</strong> — capacity planning baseado em métricas reais.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 10 · Infra alvo
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Infraestrutura</div>
+        <h2>Arquitetura alvo: Railway + R2</h2>
+
+        <div class="two-col">
+          <div>
+            <div class="infra-grid" style="margin-bottom:1em;">
+              <div class="infra-box">
+                <div class="icon">🚂</div>
+                <p><strong>Railway</strong><br>Compute único</p>
+                <p style="margin-top:0.3em;color:var(--gold);font-size:0.6em;">Backend · Frontend · Postgres · Redis</p>
+              </div>
+              <div class="infra-arrow">+</div>
+              <div class="infra-box">
+                <div class="icon">☁️</div>
+                <p><strong>Cloudflare R2</strong><br>Object storage</p>
+                <p style="margin-top:0.3em;color:var(--gold);font-size:0.6em;">Uploads · Arquivos · Assets</p>
+              </div>
+              <div class="infra-arrow">+</div>
+              <div class="infra-box">
+                <div class="icon">🛡️</div>
+                <p><strong>Cloudflare</strong><br>DNS · CDN · WAF</p>
+                <p style="margin-top:0.3em;color:var(--gold);font-size:0.6em;">TLS auto · Rate limit · DDoS</p>
+              </div>
+            </div>
+
+            <div class="finding">
+              <div class="finding-dot dot-ok"></div>
+              <p>Railway já é o backend de todos os produtos — a consolidação do frontend elimina a conta Vercel sem
+                custo adicional relevante.</p>
+            </div>
+            <div class="finding">
+              <div class="finding-dot dot-ok"></div>
+              <p>R2 mantido exclusivamente para armazenamento de objetos (S3-compatible) — sem migração de dados
+                necessária.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:0.6em;">
+              <h4>O que sai</h4>
+              <ul>
+                <li>Vercel (todos os frontends migram para Railway)</li>
+                <li>Supabase (orka-pages — migrar 100% para Prisma + Railway Postgres)</li>
+                <li>Uploads em disco local do orka-home (→ R2)</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>O que fica</h4>
+              <ul>
+                <li>Railway: compute, Postgres gerenciado, Redis gerenciado</li>
+                <li>Cloudflare R2: uploads e armazenamento de objetos</li>
+                <li>Cloudflare DNS: domínios e TLS automático</li>
+                <li>Resend: e-mail transacional (orka-pages)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 11 · Design System ORKA
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Identidade de produto</div>
+        <h2>Design System ORKA</h2>
+
+        <div class="ds-grid">
+          <div>
+            <div class="finding" style="margin-bottom:0.8em;">
+              <div class="finding-dot dot-alto"></div>
+              <p>Cada produto do grupo foi construído de forma independente — sem tokens de design, componentes, paleta
+                ou tipografia compartilhados. O resultado é inconsistência visual entre produtos da mesma marca.</p>
+            </div>
+
+            <div class="card" style="margin-bottom:0.6em;">
+              <h4>O que é o Design System ORKA</h4>
+              <ul>
+                <li>Biblioteca de componentes React compartilhada</li>
+                <li>Tokens de design: cores, tipografia, espaçamento, sombras</li>
+                <li>Diretrizes visuais e de UX para toda a família ORKA</li>
+                <li>Publicado como pacote interno (npm privado ou monorepo)</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h4>Base sugerida</h4>
+              <ul>
+                <li><strong>shadcn/ui</strong> + Tailwind CSS (já em uso em orka-closer e orka-pages)</li>
+                <li>Radix UI primitives para acessibilidade</li>
+                <li>Storybook para documentação viva dos componentes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:0.6em;">
+              <h4>Benefícios esperados</h4>
+              <ul>
+                <li>Identidade visual consistente em todos os produtos</li>
+                <li>Velocidade de desenvolvimento frontend: componentes prontos e validados</li>
+                <li>Redução de retrabalho de UI entre produtos</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h4>Produtos que se beneficiam imediatamente</h4>
+              <ul>
+                <li>orka-home (Next.js — sem sistema de design definido)</li>
+                <li>orka-save (painel principal + outreach panel desconexos)</li>
+                <li>Leads-Orka (frontend React sem padronização)</li>
+                <li>ORKA dashboard (React + Vite)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 12 · Anti Vibe Coding Pattern (operacional)
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Cultura de engenharia · AI-driven</div>
+        <h2>Anti Vibe Coding Pattern</h2>
+
+        <div class="callout callout-ok" style="margin-bottom:0.45em;">
+          Devemos guiar a IA para evitar alucinações e códigos indesejados.
+        </div>
+
+        <div class="two-col">
+          <div>
+
+            <div style="display:flex;gap:0.55em;align-items:flex-start;margin-bottom:0.45em;">
+              <span
+                style="width:1.55em;height:1.55em;border-radius:50%;background:var(--primary-dim);border:1px solid var(--border-hover);color:var(--primary-light);font-size:0.6em;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+              <div>
+                <strong style="display:block;font-size:0.66em;color:var(--fg);margin-bottom:0.1em;">PRD em
+                  Markdown</strong>
+                <p style="font-size:0.6em;color:rgba(250,250,250,0.7);margin:0;line-height:1.4;">Toda feature começa
+                  com um Product Requirements Document — problema, escopo, critério de aceite, tradeoffs. Versionado
+                  ao lado do código que descreve.</p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.55em;align-items:flex-start;margin-bottom:0.45em;">
+              <span
+                style="width:1.55em;height:1.55em;border-radius:50%;background:var(--primary-dim);border:1px solid var(--border-hover);color:var(--primary-light);font-size:0.6em;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+              <div>
+                <strong style="display:block;font-size:0.66em;color:var(--fg);margin-bottom:0.1em;">IA escreve os
+                  testes (TDD)</strong>
+                <p style="font-size:0.6em;color:rgba(250,250,250,0.7);margin:0;line-height:1.4;">Antes de qualquer
+                  linha de implementação, a IA traduz o PRD em testes. Os testes descrevem o comportamento esperado e
+                  viram o contrato objetivo da feature.</p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.55em;align-items:flex-start;margin-bottom:0.45em;">
+              <span
+                style="width:1.55em;height:1.55em;border-radius:50%;background:var(--primary-dim);border:1px solid var(--border-hover);color:var(--primary-light);font-size:0.6em;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+              <div>
+                <strong style="display:block;font-size:0.66em;color:var(--fg);margin-bottom:0.1em;">Implementação
+                  guiada pelos testes</strong>
+                <p style="font-size:0.6em;color:rgba(250,250,250,0.7);margin:0;line-height:1.4;">A IA escreve o
+                  mínimo de código necessário para os testes passarem.</p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.55em;align-items:flex-start;margin-bottom:0.45em;">
+              <span
+                style="width:1.55em;height:1.55em;border-radius:50%;background:var(--primary-dim);border:1px solid var(--border-hover);color:var(--primary-light);font-size:0.6em;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
+              <div>
+                <strong style="display:block;font-size:0.66em;color:var(--fg);margin-bottom:0.1em;">Iteração até
+                  verde</strong>
+                <p style="font-size:0.6em;color:rgba(250,250,250,0.7);margin:0;line-height:1.4;">Testes rodam,
+                  falhas são analisadas, código é refinado em ciclos curtos. A feature está pronta quando está
+                  robusta — não apenas "funcionando".</p>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.55em;align-items:flex-start;">
+              <span
+                style="width:1.55em;height:1.55em;border-radius:50%;background:var(--primary-dim);border:1px solid var(--border-hover);color:var(--primary-light);font-size:0.6em;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</span>
+              <div>
+                <strong style="display:block;font-size:0.66em;color:var(--fg);margin-bottom:0.1em;">PRD evolui com o
+                  código</strong>
+                <p style="font-size:0.6em;color:rgba(250,250,250,0.7);margin:0;line-height:1.4;">Ao fim do ciclo,
+                  decisões de implementação, tradeoffs descobertos e mudanças de escopo voltam ao documento. PRD
+                  nunca fica desatualizado — vive com o código.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:0.4em;">
+              <h4>Stack aprovada</h4>
+              <ul>
+                <li><strong>Claude Code</strong> — agente principal de implementação</li>
+                <li><strong>Cursor</strong> — IDE com edição contextual</li>
+              </ul>
+            </div>
+            <div class="card" style="margin-bottom:0.4em;">
+              <h4>Política de dados</h4>
+              <ul>
+                <li>Sem PII, segredos ou credenciais em prompts</li>
+                <li>Auth, billing e integrações sensíveis revisadas por humano antes do prompt</li>
+                <li>Logs de uso de IA auditáveis por projeto</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>Métricas que acompanhamos</h4>
+              <ul>
+                <li>Tempo de feature: do PRD até produção</li>
+                <li>Bugs em produção pós-merge — sinal de TDD fraco</li>
+                <li>Tempo de code review humano</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 13 · Proposta concreta de sociedade
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a">
+        <div class="section-label">Proposta de sociedade</div>
+        <h2>Termos da proposta</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>Participação societária</h4>
+            <ul>
+              <li><strong style="color:var(--primary-light);">33%</strong> da empresa</li>
+              <li>Vesting de <strong>12 meses</strong>: início em <strong
+                  style="color:var(--primary-light);">20%</strong>, atinge <strong
+                  style="color:var(--primary-light);">33%</strong> ao final do período</li>
+              <li><strong>Vesting condicionado ao cumprimento das metas</strong> de curto (1–3 meses), médio (3–6
+                meses) e longo prazo (6–12 meses) definidas no roadmap técnico</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Papel — CTO</h4>
+            <ul>
+              <li>Autonomia plena sobre decisões técnicas</li>
+              <li>Liderança Técnica dos produtos do grupo</li>
+              <li>Arquitetura, contratação técnica e roadmap de engenharia</li>
+              <li>Ponto de contato técnico com sócios e investidores</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Reinvestimento de pró-labore</h4>
+            <ul>
+              <li><strong style="color:var(--primary-light);">0–6 meses:</strong> 100% da minha distribuição de lucros
+                reinvestida em desenvolvimento tecnológico</li>
+              <li><strong style="color:var(--primary-light);">A partir de 6 meses:</strong> revisão conjunta — continuar
+                reinvestimento por +6 meses ou iniciar retirada</li>
+              <li>Skin in the game direto, além do equity</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h4>Garantias e regras</h4>
+            <ul>
+              <li>Não impacta a distribuição de lucros dos demais sócios</li>
+              <li>Valor reinvestido permanece em <strong>posição separada de investimento</strong> — fora do caixa
+                operacional, não compõe saldo para retiradas futuras</li>
+              <li>Decisões técnicas finais sob escopo do CTO</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────────────────────
+     SLIDE 14 · A pergunta que abre a conversa
+────────────────────────────────────────── -->
+      <section data-background-color="#0a0a0a"
+        style="text-align:center !important; overflow:hidden;">
+
+        <!-- Atmospheric glow orbs -->
+        <div
+          style="position:absolute; top:6%; left:8%; width:540px; height:540px; background:radial-gradient(circle, rgba(124,58,237,0.28) 0%, rgba(124,58,237,0.08) 35%, transparent 65%); filter:blur(70px); pointer-events:none; z-index:0;">
+        </div>
+        <div
+          style="position:absolute; bottom:6%; right:8%; width:540px; height:540px; background:radial-gradient(circle, rgba(59,130,246,0.22) 0%, rgba(59,130,246,0.06) 35%, transparent 65%); filter:blur(70px); pointer-events:none; z-index:0;">
+        </div>
+
+        <!-- Faint grid texture -->
+        <div
+          style="position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size:24px 24px; pointer-events:none; z-index:0; mask-image:radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%); -webkit-mask-image:radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);">
+        </div>
+
+        <!-- Content -->
+        <div style="position:relative; z-index:1; padding:0 1em;">
+
+          <div
+            style="font-size:0.5em; letter-spacing:0.32em; text-transform:uppercase; font-weight:600; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:inline-block; margin-bottom:1.2em;">
+            sobre o sucesso
+          </div>
+
+          <!-- Decorative quote mark -->
+          <div
+            style="font-size:4.5em; line-height:0.3; color:var(--primary); opacity:0.32; font-family:Georgia, 'Times New Roman', serif; margin-bottom:0.15em; font-weight:700;">
+            “
+          </div>
+
+          <blockquote
+            style="font-size:1.55em !important; font-weight:500 !important; color:var(--fg) !important; line-height:1.4 !important; letter-spacing:-0.015em !important; max-width:1000px; margin:0 auto !important; font-family:Georgia, 'Times New Roman', serif; font-style:italic;">
+            Somos o que repetidamente fazemos.<br>
+            A excelência, portanto, não é um ato,<br>
+            mas <span
+              style="background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:700; font-style:normal;">um
+              hábito</span>.
+          </blockquote>
+
+          <div
+            style="display:flex; align-items:center; justify-content:center; gap:0.7em; margin-top:1.5em;">
+            <span
+              style="display:inline-block; width:32px; height:1px; background:var(--primary); opacity:0.5;"></span>
+            <span
+              style="font-size:0.6em; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); font-weight:600;">Aristóteles</span>
+            <span
+              style="display:inline-block; width:32px; height:1px; background:var(--primary); opacity:0.5;"></span>
+          </div>
+        </div>
+
+        <!-- Footer signature -->
+        <div
+          style="position:absolute; bottom:1.4em; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:0.8em; z-index:1;">
+          <img src="logo-orka.png" alt="ORKA"
+            style="height:20px; opacity:0.45; object-fit:contain;" />
+          <span
+            style="font-size:0.42em; color:var(--muted); letter-spacing:0.22em; text-transform:uppercase; font-weight:500;">Brunno
+            Henrique &nbsp;·&nbsp; Maio 2026</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      transition: 'fade',
+      transitionSpeed: 'fast',
+      backgroundTransition: 'fade',
+      width: 1200,
+      height: 700,
+      margin: 0.06,
+      minScale: 0.3,
+      maxScale: 1.5,
+    });
+  </script>
+</body>
+
+</html>
